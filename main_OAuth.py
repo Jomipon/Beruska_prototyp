@@ -8,7 +8,7 @@ from supabase import create_client, Client
 load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
-APP_BASE_URL = os.getenv("APP_BASE_URL", "http://localhost:8501")
+APP_BASE_URL = os.getenv("APP_BASE_URL", "https://jomipon-beruska-prototyp.streamlit.app")
 
 # --- vytvoření klienta s ANON klíčem (důležité pro RLS) ---
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
