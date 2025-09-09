@@ -83,7 +83,8 @@ if sess and getattr(sess, "user", None):
     items = supabase.from_("items").select("*").order("created_at").execute()
     if items.data:
         df = pd.DataFrame(items.data)
-        st.dataframe(data=df[["content","id"]], use_container_width=True,hide_index=True,selection_mode="single-row")
+        #st.dataframe(data=df[["content","id"]], use_container_width=True,hide_index=True,selection_mode="single-row")
+        st.dataframe(data=df[["content","id"]], use_container_width=True,hide_index=True)
         #st.data_editor(data=df)
     else:
         st.write("Žádná data")
