@@ -10,6 +10,9 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 APP_BASE_URL = os.getenv("APP_BASE_URL", "https://jomipon-beruska-prototyp.streamlit.app")
 
+st.set_page_config(page_title="Streamlit + Supabase + RLS", page_icon="🔐")
+st.title("🔐 Streamlit + Supabase Auth (Google) + RLS")
+
 @st.cache_resource
 def get_client():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -22,9 +25,6 @@ def logout():
         st.session_state.pop("sb_tokens", None)
 
 supabase = get_client()
-
-st.set_page_config(page_title="Streamlit + Supabase + RLS", page_icon="🔐")
-st.title("🔐 Streamlit + Supabase Auth (Google) + RLS")
 
 # 1) Po načtení stránky zpracuj ?code=... JEN JEDNOU
 code = st.query_params.get("code")
