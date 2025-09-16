@@ -21,18 +21,23 @@ st.title("🔐 Streamlit + Supabase + AUTH")
 
 if st.button("code='123'"):
     st.query_params["code"] = "123"
+    st.query_params.update(st.query_params) 
     st.rerun()
 if st.button("code='456'"):
     st.query_params["code"] = "456"
+    st.query_params.update(st.query_params) 
     st.rerun()
 if st.button("code='789'"):
     st.query_params["code"] = "789"
+    st.query_params.update(st.query_params) 
     st.rerun()
 if st.button("no code"):
     st.query_params.pop("code", None)
+    st.query_params.update(st.query_params) 
     st.rerun()
 
 st.write(f"code = {st.query_params.get('code', 'NO CODE')}")
+st.write("Streamlit verze:", st.__version__)
 
 if st.button("Znovu načíst stránku"):
     st.rerun()
