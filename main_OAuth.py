@@ -35,6 +35,10 @@ if st.button("no code"):
     st.query_params.pop("code", None)
     st.query_params.update(st.query_params) 
     st.rerun()
+if st.button("CLEAR"):
+    st.query_params.clear()
+    st.query_params.update(st.query_params) 
+    st.rerun()
 
 st.write(f"code = {st.query_params.get('code', 'NO CODE')}")
 st.write("Streamlit verze:", st.__version__)
