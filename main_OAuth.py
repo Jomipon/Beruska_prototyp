@@ -19,15 +19,17 @@ supabase = get_client()
 st.set_page_config(page_title="Streamlit + Supabase + AUTH", page_icon="🔐")
 st.title("🔐 Streamlit + Supabase + AUTH")
 
-if st.button("Refresh"):
+if st.button("Znovu načíst stránku"):
     st.rerun()
 
 session = None
 
 if "sb_tokens" in st.session_state:
-    at, rt = st.session_state["sb_tokens"]
-    supabase.auth.set_session(at, rt)
-
+    try:
+        at, rt = st.session_state["sb_tokens"]
+        supabase.auth.set_session(at, rt)
+    except:
+        pass
     session = supabase.auth.get_session()
 
 if "sb_tokens" not in st.session_state:
@@ -45,13 +47,16 @@ if "sb_tokens" not in st.session_state:
                     session.access_token,
                     session.refresh_token,
                 )
+                st.session_state["zobrazit_prihlaseno"] = True
             else:
                 st.error("Jméno nebo heslo je neplatné")
             st.rerun()
         
 
 if session:
-    st.success("Přihlášeno")
+    if "zobrazit_prihlaseno" in st.session_state and st.session_state["zobrazit_prihlaseno"]:
+        st.success("Přihlášeno")
+        st.session_state.pop("zobrazit_prihlaseno", None)
     if st.button("Odhlásit"):
         try:
             supabase.auth.sign_out()
@@ -63,51 +68,95 @@ else:
     st.warning("Nepřihlášený")
 
 
-st.write(f"{str(uuid.uuid4())}")
-
 if session:
-    st.write("Test")
-    with st.form("Add_item"):
-        content = st.text_input("Name:")
-        if st.form_submit_button("Přidat"):
-            try:
-                ins = supabase.from_("items").insert({"content": content.strip()}).execute()
-                st.success(f"Přidáno: {ins.data[0]['content']}")
-                #st.rerun()
-            except Exception as e:
-                st.error(f"Nepovedlo se uložit do databáze\n: {e}")
-    items = supabase.from_("items").select("*").order("created_at").execute()
-    if items.data:
-        df = pd.DataFrame(items.data)
-        df = df.assign(_selected=False)
-        df = df.assign(url=df.id)
-        df["url"] = df["url"].apply(lambda x: f"{APP_BASE_URL}?item={x}")
-        # zobrazme jen potřebné sloupce (tvoje verze Streamlitu 1.33 nemá visible=False)
-        df = df[["_selected", "content", "url", "id", "owner_id", "created_at"]]
-        df_view = st.data_editor(
-            data=df,
-            hide_index=True,
-            disabled=["id", "owner_id", "content", "created_at"],
-            column_config={
-                "_selected": st.column_config.CheckboxColumn("Vybrat", default=False),
-                "url": st.column_config.LinkColumn("", display_text="Detail"),
-            },
-            column_order=["_selected", "content", "url"],
-            use_container_width=True,
-            key="items_editor"
-        )
-        selected = df_view[df_view["_selected"]]
-
-        if st.button("Smazat označené záznamy", disabled=selected.empty):
-            for _, r in selected.iterrows():
-                supabase.from_("items").delete().eq("id", r["id"]).execute()
+    item_param = st.query_params.get("item")
+    # detail předmětu
+    if item_param:
+        # odkaz zpět
+        st.link_button("Home page", url=APP_BASE_URL)
+        try:
+            item_res = supabase.from_("items").select("*").filter("id", "eq", item_param).execute()
+        except:
+            item_res = None
+        if not item_res or not item_res.data:
+            st.error("Položka nenalezena.")
+            st.query_params.pop("item", None)
             st.rerun()
+        else:
+            row = item_res.data[0]
+            content_key = f"content_{row['id']}"
+            content_key = row['id']
+            initial = row.get("content") or ""
+            if content_key not in st.session_state:
+                st.session_state[content_key] = initial
+            with st.form("edit_item"):
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.text_input("Content:", key=content_key)
+                with col2:
+                    st.text_input("id", row["id"], disabled=True)
+                    st.text_input("owner id", row["owner_id"], disabled=True)
+                with col3:
+                    st.text_input("created at", row["created_at"], disabled=True)
 
-        if st.button("Označená data"):
-            if selected.empty:
-                st.warning("Nic není označeno")
-            else:
-                st.dataframe(selected)
+                if st.form_submit_button("Uložit"):
+                    try:
+                        new_content = st.session_state[content_key]
+                        supabase.from_("items").update({"content": new_content}).eq("id", row["id"]).execute()
+                        st.success("Uloženo.")
+                    except Exception as e:
+                        st.error(f"Update error: {e}")
     else:
-        st.write("Žádná data")
+        # základní panel
+        with st.form("Add_item"):
+            st.markdown("**Přidat předmět**")
+            content = st.text_input("Name:")
+            if st.form_submit_button("Přidat"):
+                try:
+                    ins = supabase.from_("items").insert({"content": content.strip()}).execute()
+                    st.success(f"Přidáno: {ins.data[0]['content']}")
+                    #st.rerun()
+                except Exception as e:
+                    st.error(f"Nepovedlo se uložit do databáze\n: {e}")
+        items = supabase.from_("items").select("*").order("created_at").execute()
+        if items.data:
+            df = pd.DataFrame(items.data)
+            df = df.assign(_selected=False)
+            df = df.assign(url=df.id)
+            df["url"] = df["url"].apply(lambda x: f"{APP_BASE_URL}?item={x}")
+            # zobrazme jen potřebné sloupce (tvoje verze Streamlitu 1.33 nemá visible=False)
+            df = df[["_selected", "content", "url", "id", "owner_id", "created_at"]]
+            st.markdown("**Seznam předmětů**")
+            df_view = st.data_editor(
+                data=df,
+                hide_index=True,
+                disabled=["id", "owner_id", "content", "created_at"],
+                column_config={
+                    "_selected": st.column_config.CheckboxColumn("Vybrat", default=False),
+                    "url": st.column_config.LinkColumn("", display_text="Detail"),
+                },
+                column_order=["_selected", "content", "url"],
+                use_container_width=True,
+                key="items_editor"
+            )
+            selected = df_view[df_view["_selected"]]
 
+            st.write(f"Označeno {len(selected)} záznamů")
+            if st.button("Smazat označené záznamy", disabled=selected.empty):
+                for _, r in selected.iterrows():
+                    supabase.from_("items").delete().eq("id", r["id"]).execute()
+                st.rerun()
+
+            if len(selected) == 1:
+                if st.button("Detail"):
+                    st.query_params["item"] = selected.iloc[0]["id"]
+                    st.rerun()
+            if st.button("Označená data"):
+                if selected.empty:
+                    st.warning("Nic není označeno")
+                else:
+                    st.dataframe(selected)
+        else:
+            st.write("Žádná data")
+
+st.write(f"ID stránky: {str(uuid.uuid4())}")
