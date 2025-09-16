@@ -32,10 +32,7 @@ if st.button("no code"):
     st.query_params.pop("code", None)
     st.rerun()
 
-if "code" in st.query_params:
-    st.write(f"code = {st.query_params['code']}")
-else:
-    st.write("NO CODE")
+st.write(f"code = {st.query_params.get('code', 'NO CODE')}")
 
 if st.button("Znovu načíst stránku"):
     st.rerun()
