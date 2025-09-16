@@ -73,7 +73,10 @@ if session:
     # detail předmětu
     if item_param:
         # odkaz zpět
-        st.link_button("Home page", url=APP_BASE_URL)
+        #st.link_button("Home page", url=APP_BASE_URL)
+        if st.button("Home page"):
+            st.query_params.clear()
+            st.rerun()
         try:
             item_res = supabase.from_("items").select("*").filter("id", "eq", item_param).execute()
         except:
@@ -129,12 +132,12 @@ if session:
             df_view = st.data_editor(
                 data=df,
                 hide_index=True,
-                disabled=["id", "owner_id", "content", "created_at"],
+                disabled=["id", "owner_id", "content", "created_at", "url"],
                 column_config={
                     "_selected": st.column_config.CheckboxColumn("Vybrat", default=False),
                     "url": st.column_config.LinkColumn("", display_text="Detail"),
                 },
-                column_order=["_selected", "content", "url"],
+                column_order=["_selected", "content"],
                 use_container_width=True,
                 key="items_editor"
             )
@@ -146,10 +149,9 @@ if session:
                     supabase.from_("items").delete().eq("id", r["id"]).execute()
                 st.rerun()
 
-            if len(selected) == 1:
-                if st.button("Detail"):
-                    st.query_params["item"] = selected.iloc[0]["id"]
-                    st.rerun()
+            if st.button("Detail", disabled=len(selected) != 1):
+                st.query_params["item"] = selected.iloc[0]["id"]
+                st.rerun()
             if st.button("Označená data"):
                 if selected.empty:
                     st.warning("Nic není označeno")
