@@ -19,6 +19,24 @@ supabase = get_client()
 st.set_page_config(page_title="Streamlit + Supabase + AUTH", page_icon="🔐")
 st.title("🔐 Streamlit + Supabase + AUTH")
 
+if st.button("code='123'"):
+    st.query_params["code"] = "123"
+    st.rerun()
+if st.button("code='456'"):
+    st.query_params["code"] = "456"
+    st.rerun()
+if st.button("code='789'"):
+    st.query_params["code"] = "789"
+    st.rerun()
+if st.button("no code"):
+    st.query_params.pop("code", None)
+    st.rerun()
+
+if "code" in st.query_params:
+    st.write(f"code = {st.query_params['code']}")
+else:
+    st.write("NO CODE")
+
 if st.button("Znovu načíst stránku"):
     st.rerun()
 
@@ -87,7 +105,6 @@ if session:
             st.rerun()
         else:
             row = item_res.data[0]
-            content_key = f"content_{row['id']}"
             content_key = row['id']
             initial = row.get("content") or ""
             if content_key not in st.session_state:
