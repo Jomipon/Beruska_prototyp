@@ -32,7 +32,7 @@ if "sb_tokens" in st.session_state:
         pass
     session = supabase.auth.get_session()
 
-if "sb_tokens" not in st.session_state:
+if not session or "sb_tokens" not in st.session_state:
     with st.form("login"):
         input_username = st.text_input("Username:")
         input_password = st.text_input("Password:", type="password")
@@ -108,16 +108,15 @@ if session:
                         st.error(f"Update error: {e}")
     else:
         # základní panel
-        with st.form("Add_item"):
-            st.markdown("**Přidat předmět**")
-            content = st.text_input("Name:")
-            if st.form_submit_button("Přidat"):
-                try:
-                    ins = supabase.from_("items").insert({"content": content.strip()}).execute()
-                    st.success(f"Přidáno: {ins.data[0]['content']}")
-                    #st.rerun()
-                except Exception as e:
-                    st.error(f"Nepovedlo se uložit do databáze\n: {e}")
+        st.markdown("**Přidat předmět**")
+        content = st.text_input("Name:")
+        if st.button("Přidat"):
+            try:
+                ins = supabase.from_("items").insert({"content": content.strip()}).execute()
+                st.success(f"Přidáno: {ins.data[0]['content']}")
+                #st.rerun()
+            except Exception as e:
+                st.error(f"Nepovedlo se uložit do databáze\n: {e}")
         items = supabase.from_("items").select("*").order("created_at").execute()
         if items.data:
             df = pd.DataFrame(items.data)
