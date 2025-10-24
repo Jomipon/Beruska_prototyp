@@ -1,4 +1,5 @@
 import streamlit as st
+
 def set_session_from_params(database):
     code = st.query_params.get("code")
     if code and "sb_tokens" not in st.session_state:
@@ -32,8 +33,8 @@ def get_session_from_session_state(session, database, cookies):
     return session
 def get_session_from_cookies(session, database, cookies):
     if session is None:
-        if cookies is not None and cookies.ready():
-            if  "sb_tokens" not in st.session_state:
+        if (not session or "sb_tokens" not in st.session_state):
+            if cookies.ready():
                 if "acceess_token" in cookies:
                     if "refresh_token" in cookies:
                         try:
@@ -48,7 +49,6 @@ def get_session_from_cookies(session, database, cookies):
                         except:
                             session = None
     return session
-
 def user_create(email, password):
     created_user = st.session_state["sb_database"].auth.sign_up({"email": email, "password": password})
     return created_user
@@ -116,7 +116,6 @@ def get_loged_frame(session, cookies):
             pass
         st.rerun()
 
-
 def login_pageframe_by_gmail(database, app_base_url):
     st.markdown("**Google**")
     res = database.auth.sign_in_with_oauth({
@@ -130,4 +129,4 @@ def login_pageframe_by_gmail(database, app_base_url):
     if st.form_submit_button("Skrýt"):
         st.session_state["show_login"] = False
         st.rerun()
-
+        

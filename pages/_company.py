@@ -56,7 +56,7 @@ else:
     else:
         #new
         if is_new:
-            company = { "company_id":id_company, "owner_id": None, "name": "", "name_first": "", "name_last": "", "active": True, "note": "", "created_at":None }
+            company = { "company_id":id_company, "owner_id": None, "name": "", "name_first": "", "name_last": "", "active": True, "note": "", "created_at":None, "type_person": 0 }
         else:
             st.query_params.clear() 
             st.switch_page("pages/companies.py")

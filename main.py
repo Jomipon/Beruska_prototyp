@@ -24,8 +24,9 @@ pg = st.navigation([page_board, page_companies, page_company, page_test])
 
 cookies = EncryptedCookieManager(prefix=APP_NAME, password=APP_PASSWORD)
 if not cookies.ready():
-    pass
     #st.stop()
+    #st.write("Načítám cookies")
+    pass
 
 def get_client():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -62,5 +63,5 @@ else:
     with col_login:
         with st.container(border=True):
             get_login_frame(cookies, APP_BASE_URL)
-
+            
 pg.run()
