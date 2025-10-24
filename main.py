@@ -37,7 +37,7 @@ if "sb_database" not in st.session_state:
 
 st.session_state["app_base_url"] = APP_BASE_URL
 
-st.set_page_config(page_title="LEJSEK")
+st.set_page_config(page_title="LEJSEK", page_icon="lejsek_sedy_head.png")
 
 session = None
 

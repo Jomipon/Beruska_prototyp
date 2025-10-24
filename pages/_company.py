@@ -18,6 +18,11 @@ person_types = {
     0: "Fyzická osoba",
     1: "Právnická osoba"
 }
+relationship_types = {
+    0: "Odběratel",
+    1: "Dodavatel",
+    2: "Dodavatel + Odběratel"
+}
 
 def get_changes(old, new, path=()):
     changes = {}
@@ -56,7 +61,24 @@ else:
     else:
         #new
         if is_new:
-            company = { "company_id":id_company, "owner_id": None, "name": "", "name_first": "", "name_last": "", "active": True, "note": "", "created_at":None, "type_person": 0 }
+            company = { 
+                "company_id":id_company, 
+                "owner_id": None, 
+                "name": "", 
+                "name_first": "", 
+                "name_last": "", 
+                "active": True, 
+                "note": "", 
+                "created_at":None, 
+                "type_person": 0,
+                "address": "",
+                "type_relationship": 0,
+                "email": "",
+                "phone_number": "",
+                "alias": "",
+                "foundation_id": "",
+                "ico": ""   
+                }
         else:
             st.query_params.clear() 
             st.switch_page("pages/companies.py")
@@ -94,15 +116,25 @@ if company:
                                                  index=list(person_types.keys()).index(company_edited["type_person"]), 
                                                  horizontal=True,  
                                                  format_func=lambda k: person_types[k], 
-                                                 key=f"typ_{id_company}")
+                                                 key=f"type_{id_company}")
         if company_edited["type_person"] == 0:
             company_edited["name_first"] = st.text_input("Jméno:", company_edited["name_first"])
             company_edited["name_last"] = st.text_input("Příjmení:", company_edited["name_last"])
         else:
             company_edited["name"] = st.text_input("Název:", company_edited["name"])
+            company_edited["ico"] = st.text_input("IČO:", company_edited["ico"])
     company_edited["active"] = st.checkbox("Aktivní:", company_edited["active"])
     company_edited["note"] = st.text_input("Poznámka:", company_edited["note"])
-
+    company_edited["address"] = st.text_input("Adresa:", company_edited["address"])
+    company_edited["email"] = st.text_input("Email:", company_edited["email"])
+    company_edited["phone_number"] = st.text_input("Telefon:", company_edited["phone_number"])
+    company_edited["alias"] = st.text_input("Alias:", company_edited["alias"])
+    company_edited["type_relationship"] = st.radio("Vztah:", 
+                                                options=list(relationship_types.keys()), 
+                                                index=list(relationship_types.keys()).index(company_edited["type_relationship"]), 
+                                                horizontal=True,  
+                                                format_func=lambda k: relationship_types[k], 
+                                                key=f"relationship_{id_company}")
     if is_new:
         if st.button("Vytvořit"):
             insert_data = {
