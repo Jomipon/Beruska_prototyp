@@ -32,19 +32,22 @@ def get_session_from_session_state(session, database, cookies):
     return session
 def get_session_from_cookies(session, database, cookies):
     if session is None:
+        st.write(f"{cookies=}")
         if cookies is not None and cookies.ready():
-            if  "sb_tokens" not in st.session_state and "acceess_token" in cookies and "refresh_token" in cookies:
-                try:
-                    at = cookies["acceess_token"]
-                    rt = cookies["refresh_token"]
-                    database.auth.set_session(at, rt)
-                    st.session_state["sb_tokens"] = (at,rt,)
-                except Exception as e:
-                    pass
-                try:
-                    session = database.auth.get_session()
-                except:
-                    session = None
+            if  "sb_tokens" not in st.session_state:
+                if "acceess_token" in cookies:
+                    if "refresh_token" in cookies:
+                        try:
+                            at = cookies["acceess_token"]
+                            rt = cookies["refresh_token"]
+                            database.auth.set_session(at, rt)
+                            st.session_state["sb_tokens"] = (at,rt,)
+                        except Exception as e:
+                            pass
+                        try:
+                            session = database.auth.get_session()
+                        except:
+                            session = None
     return session
 
 def user_create(email, password):
