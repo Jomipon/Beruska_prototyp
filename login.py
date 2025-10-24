@@ -34,7 +34,7 @@ def get_session_from_session_state(session, database, cookies):
 def get_session_from_cookies(session, database, cookies):
     if session is None:
         if (not session or "sb_tokens" not in st.session_state):
-            if cookies.ready():
+            if cookies is not None and cookies.ready():
                 if "acceess_token" in cookies:
                     if "refresh_token" in cookies:
                         try:
@@ -129,4 +129,3 @@ def login_pageframe_by_gmail(database, app_base_url):
     if st.form_submit_button("Skrýt"):
         st.session_state["show_login"] = False
         st.rerun()
-        
