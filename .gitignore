@@ -1,0 +1,6 @@
+# Enviroments
+.env
+venv_ai_news/
+
+__pycache__/
+app.log
