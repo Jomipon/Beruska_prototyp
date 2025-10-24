@@ -34,7 +34,6 @@ def get_session_from_cookies(session, database, cookies):
     if session is None:
         if cookies is not None and cookies.ready():
             if  "sb_tokens" not in st.session_state:
-                st.write(f"{cookies=}")
                 if "acceess_token" in cookies:
                     if "refresh_token" in cookies:
                         try:
