@@ -41,17 +41,9 @@ st.set_page_config(page_title="LEJSEK")
 
 session = None
 
-def write_email(session):
-    try:
-        st.write(session.user.email)
-    except:
-        st.write("None")
 set_session_from_params(st.session_state["sb_database"])
-write_email(session)
 session = get_session_from_session_state(session, st.session_state["sb_database"], cookies)
-write_email(session)
 session = get_session_from_cookies(session, st.session_state["sb_database"], cookies)
-write_email(session)
 
 if session:
     col_picture, col_login = st.columns(2)
