@@ -5,7 +5,8 @@ from login import get_session_from_session_state
 
 if "sb_database" not in st.session_state:
     st.error("Nepovedlo se připojit k adatabázi")
-    st.stop()
+    st.switch_page("pages/board.py")
+    #st.stop()
 
 database = st.session_state.get("sb_database", None)
 tokens = st.session_state.get("sb_tokens", None)

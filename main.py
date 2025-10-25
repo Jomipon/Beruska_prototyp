@@ -17,9 +17,10 @@ APP_PASSWORD = os.getenv("APP_PASSWORD")
 
 page_board     = st.Page("pages/board.py",     title="Board",            url_path="board")
 page_companies = st.Page("pages/companies.py", title="Seznam partnerů",  url_path="companies")
-page_company   = st.Page("pages/_company.py",   title="Detail partnera",  url_path="company")
+page_company   = st.Page("pages/_company.py",  title="Detail partnera",  url_path="company")
 page_test      = st.Page("pages/page_test.py", title="Test",             url_path="test")
-pg = st.navigation([page_board, page_companies, page_company, page_test])
+page_settings  = st.Page("pages/settings.py",  title="Nastavení",        url_path="settings")
+pg = st.navigation([page_board, page_companies, page_company, page_test, page_settings])
 
 
 cookies = EncryptedCookieManager(prefix=APP_NAME, password=APP_PASSWORD)
