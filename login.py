@@ -59,7 +59,12 @@ def register_frame():
     register_email = st.text_input("Email:")
     regiter_password = st.text_input("Heslo:", type="password")
     if st.form_submit_button("Vytvořit uživatele"):
-        created_user = user_create(register_email, regiter_password)
+        try:
+            created_user = user_create(register_email, regiter_password)
+            st.write(created_user)
+        except Exception as e:
+            st.error("Nepovedlo se vytvořit uživatele")
+            #st.error(e)
         
 def login_frame(cookies, app_url_base):
     input_username = st.text_input("Email:")
