@@ -29,6 +29,31 @@ if not cookies.ready():
     #st.write("Načítám cookies")
     pass
 
+import time
+
+for _ in range(10):
+    if not cookies.ready():
+        st.write("Cookies not ready")
+    else:
+        st.write("Cookies is ready to go")
+        break
+    time.sleep(1)
+
+sleeping_text = "I am so sleepy"
+sleeping_bar = st.progress(0, sleeping_text)
+for i in range(10):
+    time.sleep(1)
+    sleeping_bar.progress(i*10, sleeping_text)
+    if not cookies.ready():
+        st.write("Cookies not ready")
+    else:
+        st.write("Cookies is ready to go")
+sleeping_bar.empty()
+st.write("Wake up")
+if not cookies.ready():
+    cookies = EncryptedCookieManager(prefix=APP_NAME, password=APP_PASSWORD)
+
+
 def get_client():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 

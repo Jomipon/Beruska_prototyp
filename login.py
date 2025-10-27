@@ -1,5 +1,4 @@
 import streamlit as st
-
 def set_session_from_params(database):
     code = st.query_params.get("code")
     if code and "sb_tokens" not in st.session_state:
@@ -32,23 +31,21 @@ def get_session_from_session_state(session, database, cookies):
         
     return session
 def get_session_from_cookies(session, database, cookies):
-    if session is None:
-        if (not session or "sb_tokens" not in st.session_state):
-            if cookies is not None and cookies.ready():
-                if "acceess_token" in cookies:
-                    if "refresh_token" in cookies:
-                        try:
-                            at = cookies["acceess_token"]
-                            rt = cookies["refresh_token"]
-                            database.auth.set_session(at, rt)
-                            st.session_state["sb_tokens"] = (at,rt,)
-                        except Exception as e:
-                            pass
-                        try:
-                            session = database.auth.get_session()
-                        except:
-                            session = None
+    if cookies is not None and cookies.ready():
+        if session is None and (not session or "sb_tokens" not in st.session_state) and "acceess_token" in cookies and "refresh_token" in cookies:
+            try:
+                at = cookies["acceess_token"]
+                rt = cookies["refresh_token"]
+                database.auth.set_session(at, rt)
+                st.session_state["sb_tokens"] = (at,rt,)
+            except Exception as e:
+                pass
+            try:
+                session = database.auth.get_session()
+            except:
+                session = None
     return session
+
 def user_create(email, password):
     created_user = st.session_state["sb_database"].auth.sign_up({"email": email, "password": password})
     return created_user
@@ -59,12 +56,7 @@ def register_frame():
     register_email = st.text_input("Email:")
     regiter_password = st.text_input("Heslo:", type="password")
     if st.form_submit_button("Vytvořit uživatele"):
-        try:
-            created_user = user_create(register_email, regiter_password)
-            st.write(created_user)
-        except Exception as e:
-            st.error("Nepovedlo se vytvořit uživatele")
-            #st.error(e)
+        created_user = user_create(register_email, regiter_password)
         
 def login_frame(cookies, app_url_base):
     input_username = st.text_input("Email:")
@@ -121,6 +113,7 @@ def get_loged_frame(session, cookies):
             pass
         st.rerun()
 
+
 def login_pageframe_by_gmail(database, app_base_url):
     st.markdown("**Google**")
     res = database.auth.sign_in_with_oauth({
@@ -134,3 +127,4 @@ def login_pageframe_by_gmail(database, app_base_url):
     if st.form_submit_button("Skrýt"):
         st.session_state["show_login"] = False
         st.rerun()
+
