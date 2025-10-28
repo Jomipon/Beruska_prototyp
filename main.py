@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import uuid
 from login import set_session_from_params, get_session_from_session_state, get_session_from_cookies, get_login_frame, get_loged_frame
+import time
 
 load_dotenv()
 
@@ -22,37 +23,15 @@ page_test      = st.Page("pages/page_test.py", title="Test",             url_pat
 page_settings  = st.Page("pages/settings.py",  title="Nastavení",        url_path="settings")
 pg = st.navigation([page_board, page_companies, page_company, page_test, page_settings])
 
-
 cookies = EncryptedCookieManager(prefix=APP_NAME, password=APP_PASSWORD)
 if not cookies.ready():
-    #st.stop()
-    #st.write("Načítám cookies")
-    pass
-
-import time
-
-for _ in range(10):
-    if not cookies.ready():
-        st.write("Cookies not ready")
-    else:
-        st.write("Cookies is ready to go")
-        break
-    time.sleep(1)
-
-sleeping_text = "I am so sleepy"
-sleeping_bar = st.progress(0, sleeping_text)
-for i in range(10):
-    time.sleep(1)
-    sleeping_bar.progress(i*10, sleeping_text)
-    if not cookies.ready():
-        st.write("Cookies not ready")
-    else:
-        st.write("Cookies is ready to go")
-sleeping_bar.empty()
-st.write("Wake up")
-if not cookies.ready():
-    cookies = EncryptedCookieManager(prefix=APP_NAME, password=APP_PASSWORD)
-
+    for _ in range(10):
+        if not cookies.ready():
+            st.write("Cookies not ready")
+        else:
+            st.write("Cookies is ready to go")
+            break
+        time.sleep(1)
 
 def get_client():
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
