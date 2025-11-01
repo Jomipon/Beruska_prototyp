@@ -16,34 +16,35 @@ def set_session_from_params(database):
             st.query_params.clear()
         st.rerun()
 def get_session_from_session_state(session, database, cookies):
-    if session is None and "sb_tokens" in st.session_state:
+    if "sb_tokens" in st.session_state: # session is None and 
         try:
             at, rt = st.session_state["sb_tokens"]
             if cookies is not None and (cookies["acceess_token"] != at or cookies["refresh_token"] != rt):
                 cookies["acceess_token"] = at
                 cookies["refresh_token"] = rt
                 cookies.save()
-            if database.auth.email is None:
-                database.auth.set_session(at, rt)
+            #if database.auth.email is None:
+            database.auth.set_session(at, rt)
             #session = database.auth.get_session()
         except Exception as e:
-            pass
+            st.write(f"Session not logined: {e}")
         
     return session
 def get_session_from_cookies(session, database, cookies):
-    if cookies is not None and cookies.ready():
-        if session is None and (not session or "sb_tokens" not in st.session_state) and "acceess_token" in cookies and "refresh_token" in cookies:
-            try:
-                at = cookies["acceess_token"]
-                rt = cookies["refresh_token"]
-                database.auth.set_session(at, rt)
-                st.session_state["sb_tokens"] = (at,rt,)
-            except Exception as e:
-                pass
-            try:
-                session = database.auth.get_session()
-            except:
-                session = None
+    if session is None:
+        session = {}
+    at_session = session.get("acceess_token","")
+    rt_session = session.get("refresh_token","")
+    at_cookies = cookies.get("acceess_token","")
+    rt_cookies = cookies.get("refresh_token","")
+    if at_session != at_cookies or rt_session != rt_cookies:
+        session["acceess_token"] = at_cookies
+        session["refresh_token"] = rt_cookies
+    try:
+        database.auth.set_session(session["acceess_token"], session["refresh_token"])
+    except:
+        st.write(f"Session not logined")
+    session = database.auth.get_session()
     return session
 
 def user_create(email, password):

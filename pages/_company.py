@@ -4,8 +4,8 @@ from copy import deepcopy
 
 if "sb_database" not in st.session_state:
     st.error("Nepovedlo se připojit k adatabázi")
-    #st.stop()
-    st.switch_page("pages/board.py")
+    st.stop()
+    #st.switch_page("pages/board.py")
 
 database = st.session_state.get("sb_database", None)
 tokens = st.session_state.get("sb_tokens", None)
@@ -102,7 +102,22 @@ def partner_smazat(db, company_id, company_name):
     with col_konec:
         if st.button("Zavřít"):
             st.rerun()
-
+company_columns = [
+                "company_id", 
+                "name", 
+                "name_first", 
+                "name_last", 
+                "active", 
+                "note", 
+                "type_person",
+                "address",
+                "type_relationship",
+                "email",
+                "phone_number",
+                "alias",
+                "foundation_id",
+                "ico"
+                ]
 if is_new:
     st.markdown("**Nový partner**")
 else:
@@ -145,6 +160,10 @@ if company:
                 "active": company_edited["active"],
                 "note": company_edited["note"]
             }
+            insert_data = {}
+            for column_name in company_columns:
+                insert_data[column_name] = company_edited[column_name]
+            insert_data["company_id"] = id_company
             try:
                 database.from_("company").insert(insert_data).execute()
                 st.query_params.pop("new", None)

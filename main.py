@@ -12,7 +12,7 @@ load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
-APP_BASE_URL = os.getenv("APP_BASE_URL", "https://jomipon-beruska-prototyp.streamlit.app")
+APP_BASE_URL = os.getenv("APP_BASE_URL")
 APP_NAME = os.getenv("APP_NAME")
 APP_PASSWORD = os.getenv("APP_PASSWORD")
 
@@ -25,20 +25,11 @@ pg = st.navigation([page_board, page_companies, page_company, page_test, page_se
 
 cookies = EncryptedCookieManager(prefix=APP_NAME, password=APP_PASSWORD)
 if not cookies.ready():
-    for _ in range(10):
-        if not cookies.ready():
-            st.write("Cookies not ready")
-        else:
-            st.write("Cookies is ready to go")
-            break
-        time.sleep(1)
+    st.stop()
 
-def get_client():
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-database = get_client()
-if "sb_database" not in st.session_state:
-    st.session_state["sb_database"] = database
+database = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+#if "sb_database" not in st.session_state:
+st.session_state["sb_database"] = database
 
 st.session_state["app_base_url"] = APP_BASE_URL
 
@@ -47,8 +38,8 @@ st.set_page_config(page_title="LEJSEK", page_icon="lejsek_sedy_head.png")
 session = None
 
 set_session_from_params(st.session_state["sb_database"])
-session = get_session_from_session_state(session, st.session_state["sb_database"], cookies)
 session = get_session_from_cookies(session, st.session_state["sb_database"], cookies)
+session = get_session_from_session_state(session, st.session_state["sb_database"], cookies)
 
 if session:
     col_picture, col_login = st.columns(2)
