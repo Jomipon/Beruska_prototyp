@@ -86,13 +86,15 @@ else:
 @st.dialog("Smazat partnera")
 def partner_smazat(db, company_id, company_name):
     st.write("Opravdu chcete smazat partnera?")
-    st.write(f"{company_name} - {company_id}")
+    st.write(f"{company_name}")
+    st.write(f"({company_id})")
     col_smazat, col_konec = st.columns(2)
     with col_smazat:
         if st.button("Smazat"):
             zavrit_dialog = False
             try:
                 db.from_("company").delete().eq("company_id", company_id).execute()
+                st.toast(f"Partner byl smazan", icon="✅")
                 zavrit_dialog = True
             except Exception as e:
                 st.error("Nepovedlo se smazat partnera")
@@ -153,12 +155,7 @@ if company:
     if is_new:
         if st.button("Vytvořit"):
             insert_data = {
-                "company_id":id_company,
-                "name": company_edited["name"],
-                "name_first": "",
-                "name_last": "", 
-                "active": company_edited["active"],
-                "note": company_edited["note"]
+                "company_id":id_company
             }
             insert_data = {}
             for column_name in company_columns:
@@ -167,6 +164,8 @@ if company:
             try:
                 database.from_("company").insert(insert_data).execute()
                 st.query_params.pop("new", None)
+                st.success("Vytvořeno")
+                st.toast("Partner byl vytvořen", icon="✅")
             except:
                 st.error("Nepovedlo se vytvořit partnera")
     else:
@@ -181,9 +180,12 @@ if company:
                 else:
                     try:
                         updated_data = database.from_("company").update(changes).eq("company_id", id_company).execute()
+                        st.query_params.pop("new", None)
                         st.success("Uloženo")
+                        st.toast("Partner byl uložen", icon="✅")
                     except:
                         st.error("Nepovedlo se uložit data")
         with col2:
             if st.button("Smazat"):
-                partner_smazat(database, id_company, company_edited["name"])
+                company_name = f'{company_edited["name_first"]} {company_edited["name_last"]}' if company_edited["type_person"] == 0 else company_edited["name"]
+                partner_smazat(database, id_company, company_name)

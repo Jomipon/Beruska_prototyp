@@ -15,6 +15,17 @@ def set_session_from_params(database):
             # smaž ?code=... z URL a rerun
             st.query_params.clear()
         st.rerun()
+    param_access_token = st.query_params.get("access_token")
+    param_refresh_token = st.query_params.get("refresh_token")
+    param_type = st.query_params.get("type")
+    if param_type == "signup" and param_access_token and param_refresh_token:
+        st.session_state["sb_tokens"] = param_access_token, param_refresh_token
+        st.query_params.pop("access_token")
+        st.query_params.pop("expires_at")
+        st.query_params.pop("expires_in")
+        st.query_params.pop("refresh_token")
+        st.query_params.pop("token_type")
+        st.query_params.pop("type")
 def get_session_from_session_state(session, database, cookies):
     if "sb_tokens" in st.session_state: # session is None and 
         try:
@@ -57,7 +68,21 @@ def register_frame():
     register_email = st.text_input("Email:")
     regiter_password = st.text_input("Heslo:", type="password")
     if st.form_submit_button("Vytvořit uživatele"):
-        created_user = user_create(register_email, regiter_password)
+        if len(register_email) < 5:
+            st.error("Nejdříve je potřeba zadat email")
+        elif "@" not in register_email:
+            st.error("Email nemá správný formát")
+        else:
+            if len(regiter_password) >= 8:
+                try:
+                    created_user = user_create(register_email, regiter_password)
+                    st.success("Uživatel byl zaregistrován.\nZkontrolujte si zadanou emailovou adresu.")
+                    st.write(f"{created_user=}")
+                    st.toast("Uživatel by zaregistrován")
+                except:
+                    st.error("Nepovedlo se zaregistrovat uživatele")
+            else:
+                st.error("Heslo musí být minimálně 8 znaků dlouhé")
         
 def login_frame(cookies, app_url_base):
     input_username = st.text_input("Email:")
@@ -78,7 +103,7 @@ def login_frame(cookies, app_url_base):
             cookies["acceess_token"] = at
             cookies["refresh_token"] = rt
             cookies.save()
-            st.session_state["zobrazit_prihlaseno"] = True
+            st.session_state["show_loged_in"] = True
         else:
             st.error("Jméno nebo heslo je neplatné")
         st.rerun()

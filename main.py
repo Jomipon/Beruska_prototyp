@@ -28,7 +28,7 @@ if not cookies.ready():
     st.stop()
 
 database = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-#if "sb_database" not in st.session_state:
+
 st.session_state["sb_database"] = database
 
 st.session_state["app_base_url"] = APP_BASE_URL
@@ -59,5 +59,12 @@ else:
     with col_login:
         with st.container(border=True):
             get_login_frame(cookies, APP_BASE_URL)
+
+if "show_loged_out" in st.session_state and st.session_state["show_loged_out"]:
+    st.info("Odhlášeno")
+    st.session_state["show_loged_out"] = False
+if "show_loged_in" in st.session_state and st.session_state["show_loged_in"]:
+    st.info("Přihlášeno")
+    st.session_state["show_loged_in"] = False
 
 pg.run()
