@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import uuid
 from login import get_session_from_session_state
 
@@ -33,7 +34,8 @@ if companies.data:
     df = pd.DataFrame(companies.data)
     df = df.assign(url=df.company_id)
     df["url"] = df["url"].apply(lambda x: f"{st.session_state['app_base_url']}/company?id={x}")
-    df = df[["company_id", "name", "name_first", "name_last", "active", "note", "created_at", "url", "phone_number", "alias"]]
+    df = df[["company_id", "name", "name_first", "name_last", "active", "note", "created_at", "url", "phone_number", "alias", "type_person"]]
+    df["name"] = np.where(df["type_person"] == 0, df["name_first"] + " " + df["name_last"], df["name"])
     df_view = st.data_editor(
         data=df,
         hide_index=True,

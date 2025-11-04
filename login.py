@@ -39,7 +39,6 @@ def get_session_from_session_state(session, database, cookies):
             #session = database.auth.get_session()
         except Exception as e:
             st.write(f"Session not logined: {e}")
-        
     return session
 def get_session_from_cookies(session, database, cookies):
     if session is None:
@@ -76,9 +75,10 @@ def register_frame():
             if len(regiter_password) >= 8:
                 try:
                     created_user = user_create(register_email, regiter_password)
-                    st.success("Uživatel byl zaregistrován.\nZkontrolujte si zadanou emailovou adresu.")
+                    st.success("Uživatel byl zaregistrován.\nZkontrolujte si zadanou emailovou schránku.")
                     st.write(f"{created_user=}")
                     st.toast("Uživatel by zaregistrován")
+                    st.session_state["user_info_registrered"] = True
                 except:
                     st.error("Nepovedlo se zaregistrovat uživatele")
             else:
