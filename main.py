@@ -64,7 +64,7 @@ if "show_loged_out" in st.session_state and st.session_state["show_loged_out"]:
     st.session_state["show_loged_out"] = False
 if "show_loged_in" in st.session_state and st.session_state["show_loged_in"]:
     st.info("Přihlášeno")
-    st.success["show_loged_in"] = False
+    st.session_state["show_loged_in"] = False
 if "user_info_registrered" in st.session_state and st.session_state["user_info_registrered"]:
     st.success("Emailová adresa byla zaregistrována")
     st.session_state["user_info_registrered"] = False
