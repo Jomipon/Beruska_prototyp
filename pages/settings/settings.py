@@ -1,5 +1,5 @@
 import streamlit as st
-from login import get_session_from_session_state
+from login import get_session_from_session_state, set_session_from_params, get_session_from_cookies
 from copy import deepcopy
 
 
@@ -12,8 +12,11 @@ database = st.session_state.get("sb_database", None)
 tokens = st.session_state.get("sb_tokens", None)
 
 session = None
-cookies = None
+cookies = st.session_state["cookies"]
+set_session_from_params(st.session_state["sb_database"])
+session = get_session_from_cookies(session, st.session_state["sb_database"], cookies)
 session = get_session_from_session_state(session, st.session_state["sb_database"], cookies)
+
 
 if database is None:
     st.query_params.clear() 

@@ -38,7 +38,7 @@ def get_session_from_session_state(session, database, cookies):
             database.auth.set_session(at, rt)
             #session = database.auth.get_session()
         except Exception as e:
-            st.write(f"Session not logined: {e}")
+            pass
     return session
 def get_session_from_cookies(session, database, cookies):
     if session is None:
@@ -53,7 +53,7 @@ def get_session_from_cookies(session, database, cookies):
     try:
         database.auth.set_session(session["acceess_token"], session["refresh_token"])
     except:
-        st.write(f"Session not logined")
+        pass
     session = database.auth.get_session()
     return session
 

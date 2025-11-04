@@ -46,7 +46,7 @@ st.session_state["app_base_url"] = APP_BASE_URL
 st.set_page_config(page_title="LEJSEK", page_icon="pictures/lejsek_sedy_head.png")
 
 session = None
-
+st.session_state["cookies"] = cookies
 set_session_from_params(st.session_state["sb_database"])
 session = get_session_from_cookies(session, st.session_state["sb_database"], cookies)
 session = get_session_from_session_state(session, st.session_state["sb_database"], cookies)
@@ -79,7 +79,8 @@ if "user_info_registrered" in st.session_state and st.session_state["user_info_r
     st.success("Emailová adresa byla zaregistrována")
     st.session_state["user_info_registrered"] = False
 
-main_menu()
+if session:
+    main_menu()
 
 pg.run()
 

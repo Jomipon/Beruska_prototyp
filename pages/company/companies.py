@@ -20,7 +20,6 @@ if database is None:
     #st.switch_page("pages/board.py")
     st.stop()
 
-st.markdown("**Seznam partnerů**")
 try:
     database.rpc("create_owner_id").execute()
 except:
@@ -28,6 +27,7 @@ except:
     #st.switch_page("pages/board.py")
     st.stop()
 
+st.markdown("**Seznam partnerů**")
 companies = database.from_("company").select("*").order("name").execute()
 if companies.data:
     df = pd.DataFrame(companies.data)
