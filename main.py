@@ -26,6 +26,8 @@ page_company   = pg.page_create("pages/company/company.py", "Detail partnera", "
 
 #assortment
 page_assortments = pg.page_create("pages/assortment/assortments.py", "Seznam sortimentů", "assortments")
+page_assortment = pg.page_create("pages/assortment/assortment.py", "Detail sortimentu", "assortment")
+
 
 page_test      = pg.page_create("pages/page_test.py", "Test", "test")
 #Settings

@@ -109,3 +109,42 @@ create policy "delete own rows"
 on settings for delete
 to authenticated
 using (owner_id = get_owner_id ());
+
+create table public.item
+ (
+  item_id text not null default gen_random_uuid (),
+  owner_id text not null DEFAULT get_owner_id((auth.uid())::text),
+  name text not null,
+  price_purchase float not null,
+  price_selling float not null,
+  item_type int not null default 0,
+  active boolean not null default true,
+  note text not null,
+  created_at timestamp with time zone not null default now(),
+  constraint item_pkey primary key (item_id)
+) TABLESPACE pg_default;
+ALTER TABLE item ENABLE ROW LEVEL SECURITY;
+
+create policy "read own rows"
+on item for select
+to authenticated
+using (owner_id = get_owner_id ());
+
+-- INSERT: smí vložit jen jako sám sebe
+create policy "insert as self"
+on item for insert
+to authenticated
+with check (owner_id = get_owner_id ());
+
+-- UPDATE: může měnit jen své řádky
+create policy "update own rows"
+on item for update
+to authenticated
+using (owner_id = get_owner_id ())
+with check (owner_id = get_owner_id ());
+
+-- DELETE: může mazat jen své řádky (pokud chceš)
+create policy "delete own rows"
+on item for delete
+to authenticated
+using (owner_id = get_owner_id ());
