@@ -1,6 +1,7 @@
 import streamlit as st
 from login import get_session_from_session_state, set_session_from_params, get_session_from_cookies
-
+from support import download_get_url
+from forecast import forecast
 
 if "sb_database" not in st.session_state:
     st.error("Nepovedlo se připojit k databázi")
@@ -20,5 +21,14 @@ if database is None:
     st.stop()
 
 if session:
-    st.write("**Under construction**")
-    st.image("pictures/under_construction.png", use_container_width=True)
+    settings = database.from_("settings").select("*").execute()
+    if settings.data:
+        if settings.data[0]["weather_enable"] and settings.data[0]["weather_lat"] and settings.data[0]["weather_lon"]:
+            lat = settings.data[0]["weather_lat"]
+            lon = settings.data[0]["weather_lon"]
+            weather = forecast(lat,lon)
+            xml_data = weather.download_data()
+            pd_data = weather.parse_download_data(xml_data)
+            weatner_picture = weather.create_graf(pd_data)
+            st.write("Předpověď počasí na další dny")
+            st.image(weatner_picture)

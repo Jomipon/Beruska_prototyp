@@ -80,6 +80,8 @@ create table public.settings
   owner_id text DEFAULT get_owner_id(),
   weather_enable boolean not null default false,
   weather_place text null,
+  weather_lat float null,
+  weather_lon float null,
   quote_enable boolean not null default false,
   constraint settings_pkey primary key (settings_id)
 ) TABLESPACE pg_default;
@@ -148,3 +150,12 @@ create policy "delete own rows"
 on item for delete
 to authenticated
 using (owner_id = get_owner_id ());
+
+create table public.weather_place(
+  id text not null default gen_random_uuid (),
+  place_name text not null,
+  place_lat float not null,
+  place_lon float not null,
+  created_at timestamp with time zone not null default now(),
+  constraint weather_place_pkey primary key (id)
+) TABLESPACE pg_default;
