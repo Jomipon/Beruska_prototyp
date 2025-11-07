@@ -4,3 +4,4 @@ streamlit-aggrid==1.1.8.post1
 streamlit-cookies-manager==0.2.0
 supabase==2.18.1
 pycurl==7.45.7
+matplotlib==3.10.6
