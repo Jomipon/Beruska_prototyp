@@ -29,6 +29,7 @@ if session:
             weather = forecast(lat,lon)
             xml_data = weather.download_data()
             pd_data = weather.parse_download_data(xml_data)
-            weatner_picture = weather.create_graf(pd_data)
-            st.write("Předpověď počasí na další dny")
-            st.image(weatner_picture)
+            if len(pd_data) > 0:
+                weatner_picture = weather.create_graf(pd_data)
+                st.write("Předpověď počasí na další dny")
+                st.image(weatner_picture)

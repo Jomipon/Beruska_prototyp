@@ -22,7 +22,10 @@ class forecast():
         return xml_yr_no
     
     def parse_download_data(self, xml_data):
-        tree = ET.ElementTree(ET.fromstring(xml_data))
+        try:
+            tree = ET.ElementTree(ET.fromstring(xml_data))
+        except:
+            return []
         root = tree.getroot()
         products = root.findall("product")
         forecast_rows = []
