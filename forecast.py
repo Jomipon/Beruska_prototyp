@@ -178,7 +178,7 @@ class forecast():
         fig, ax = plt.subplots()
         ax.xaxis.set_major_locator(mdates.DayLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m."))
-        ax.xaxis.set_minor_locator(mdates.HourLocator(interval=6))
+        #ax.xaxis.set_minor_locator(mdates.HourLocator(interval=6))
         ax.grid(axis="x", which="major", linestyle=":", linewidth=1)
         ax.plot(rows_positive["time_from"], rows_positive["temperature_value"], color="black", label="C")
         ax.plot(rows_negative["time_from"], rows_negative["temperature_value"], color="blue", label="C")

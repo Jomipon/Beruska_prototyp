@@ -31,5 +31,5 @@ if session:
             pd_data = weather.parse_download_data(xml_data)
             if len(pd_data) > 0:
                 weatner_picture = weather.create_graf(pd_data)
-                st.write("Předpověď počasí na další dny")
+                st.write(f"Předpověď počasí na další dny: {settings.data[0]['weather_place']}")
                 st.image(weatner_picture)

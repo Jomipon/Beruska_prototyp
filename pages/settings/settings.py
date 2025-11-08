@@ -92,19 +92,20 @@ def get_place_location(place_name, database):
     settings = database.from_("weather_place").select("*").filter("place_name", "eq", place_name.lower()).execute()
     lat = 0
     lng = 0
-    if len(settings.data) == 0:
+    if len(settings.data) == 0 or not settings.data[0]["place_lat"] or not settings.data[0]["place_lon"]:
         place_name_goolge = place_name.lower()
         place_name_goolge = remove_diacriticism(place_name_goolge)
-        url = f"https://maps.googleapis.com/maps/api/geocode/xml?address={place_name_goolge}&key=AIzaSyDf1xnPM2PTDowuBpaPBZS5tczenG9rN3g"
+        url = f"https://maps.googleapis.com/maps/api/geocode/xml?address={place_name_goolge}&key={st.session_state['app_google_api']}"
         body = download_get_url(url)
         body = body.decode('UTF-8')
         lat, lng = get_gps_from_xml(body)
-        insert_data = {
-            "place_name": place_name.lower(),
-            "place_lat": lat,
-            "place_lon": lng
-        }
-        database.from_("weather_place").insert(insert_data).execute()
+        if lat != 0 and lng != 0:
+            insert_data = {
+                "place_name": place_name.lower(),
+                "place_lat": lat,
+                "place_lon": lng
+            }
+            database.from_("weather_place").insert(insert_data).execute()
     else:
         lat = settings.data[0]["place_lat"]
         lng = settings.data[0]["place_lon"]
@@ -121,6 +122,7 @@ if settings:
     st.checkbox("Předpověď počasí:", key="weather_enable")
     st.text_input("Město:", key="weather_place", disabled=st.session_state.weather_enable == 0)
     col_convert, col_lan, col_lon = st.columns(3)
+    gps_actualize = False
     with col_convert:
         if st.button("Převest na souřadnice"):
             if not st.session_state.weather_place:
@@ -130,7 +132,10 @@ if settings:
                 if lat and lon:
                     st.session_state.weather_lat = lat
                     st.session_state.weather_lon = lon
+                    gps_actualize = True
 
+    if gps_actualize:
+        st.info("Souřadnice byla aktualizována")
     with col_lan:
         st.number_input("Lat:", key="weather_lat")
     with col_lon:

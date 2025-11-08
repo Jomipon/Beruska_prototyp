@@ -17,6 +17,7 @@ SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 APP_BASE_URL = os.getenv("APP_BASE_URL")
 APP_NAME = os.getenv("APP_NAME")
 APP_PASSWORD = os.getenv("APP_PASSWORD")
+APP_GOOGLE_API = os.getenv("APP_GOOGLE_API")
 
 pg = pgs.Page_controller()
 page_board     = pg.page_create("pages/board.py", "Board", "board")
@@ -44,6 +45,7 @@ database = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 st.session_state["sb_database"] = database
 
 st.session_state["app_base_url"] = APP_BASE_URL
+st.session_state["app_google_api"] = APP_GOOGLE_API
 
 st.set_page_config(page_title="LEJSEK", page_icon="pictures/lejsek_sedy_head.png")
 

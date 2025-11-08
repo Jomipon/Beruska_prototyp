@@ -1,28 +1,24 @@
 import pycurl
 from io import BytesIO
+import streamlit as st
 
-
+@st.cache_data
 def download_get_url(url):
     client = pycurl.Curl()
-    client.setopt(client.URL, url)
+    #client.setopt(client.URL, url)
+    client.setopt(pycurl.URL, url.encode("utf-8"))
     buffer = BytesIO()
     client.setopt(client.WRITEDATA, buffer)
-    ## Setup SSL certificates
-    #c.setopt(c.CAINFO, certifi.where())
-    ## Make Request
+    client.setopt(pycurl.USERAGENT, "BeruskaApp/1.2 (+tomas.vlasaty8@gmail.cz; https://jomipon-beruska-prototyp.streamlit.app/)")
+    # Volitelně debug:
+    # client.setopt(pycurl.VERBOSE, True)
     client.perform()
-    ## Response Status Code
-    #st.write('Response Code:', client.getinfo(client.RESPONSE_CODE))
-    ## Final URL
-    #st.write('Response URL:', client.getinfo(client.EFFECTIVE_URL))
-    ## Cert Info
-    #st.write('Response Cert Info:', client.getinfo(client.INFO_CERTINFO))
-    ## Close Connection
+    status = client.getinfo(pycurl.RESPONSE_CODE)
     client.close()
-
-    ## Retrieve the content BytesIO & Decode
     body = buffer.getvalue()
     return body
+
+
 
 def remove_diacriticism(name):
     chars_replace = [ ["á","a"], ["é","e"], ["í","i"], ["ó","o"], ["ú","u"], ["ů","u"], ["ý","y"], ["č","c"], ["ď","d"], ["ě","e"], ["ň","n"], ["š","s"], ["ť","t"], ["ž","z"], ["ř","r"] ]
