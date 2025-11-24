@@ -18,7 +18,7 @@ class forecast():
     
     def download_data(self):
         url = self.get_url()
-        xml_yr_no = download_get_url(url).decode('UTF-8')
+        xml_yr_no = download_get_url(url, ()).decode('UTF-8')
         return xml_yr_no
     
     def parse_download_data(self, xml_data):
@@ -173,15 +173,16 @@ class forecast():
         rows["temp__20"] = -20
         rows["temp_0"] = 0
         rows["temp_20"] = 20
-        rows_positive = rows.where(rows["temperature_value"] >= 0).dropna(how="all")
-        rows_negative = rows.where(rows["temperature_value"] < 0).dropna(how="all")
+        #rows_positive = rows.where(rows["temperature_value"] >= 0).dropna(how="all")
+        #rows_negative = rows.where(rows["temperature_value"] < 0).dropna(how="all")
         fig, ax = plt.subplots()
         ax.xaxis.set_major_locator(mdates.DayLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m."))
         #ax.xaxis.set_minor_locator(mdates.HourLocator(interval=6))
         ax.grid(axis="x", which="major", linestyle=":", linewidth=1)
-        ax.plot(rows_positive["time_from"], rows_positive["temperature_value"], color="black", label="C")
-        ax.plot(rows_negative["time_from"], rows_negative["temperature_value"], color="blue", label="C")
+        #ax.plot(rows_positive["time_from"], rows_positive["temperature_value"], color="black", label="C")
+        #ax.plot(rows_negative["time_from"], rows_negative["temperature_value"], color="blue", label="C")
+        ax.plot(rows["time_from"], rows["temperature_value"], color="black", label="C")
         ax.plot(rows["time_from"], rows["temp__20"], color="blue", label="- 20", linestyle='dotted')
         ax.plot(rows["time_from"], rows["temp_0"], color="green", label="- 20", linestyle='dotted')
         ax.plot(rows["time_from"], rows["temp_20"], color="yellow", label="- 20", linestyle='dotted')

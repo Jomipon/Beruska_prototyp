@@ -1,6 +1,5 @@
 import streamlit as st
 from login import get_session_from_session_state, set_session_from_params, get_session_from_cookies
-from support import download_get_url
 from forecast import forecast
 
 if "sb_database" not in st.session_state:

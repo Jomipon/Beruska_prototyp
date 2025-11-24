@@ -9,7 +9,11 @@ def main_menu():
         with tab_company:
             st.page_link("pages/company/companies.py", label="Seznam Partnerů")
         with tab_assortment:
-            st.page_link("pages/assortment/assortments.py", label="Seznam sortimentu")
+            st.page_link("pages/store/assortment/assortments.py", label="Seznam sortimentu")
+            st.page_link("pages/store/receipt/receipts.py", label="Seznam příjemek")
+            st.page_link("pages/store/receipt/receipt.py", label="Příjemka")
+            st.page_link("pages/store/issue/issues.py", label="Seznam výdejek")
+            st.page_link("pages/store/issue/issue.py", label="Výdejka")
         with tab_settings:
             st.page_link("pages/settings/settings.py", label="Nastavení")
         with tab_test:

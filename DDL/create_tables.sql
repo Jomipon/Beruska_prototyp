@@ -17,7 +17,6 @@ create table public.company
   note text not null,
   type_person int null default 0,
   created_at timestamp with time zone not null default now(),
-  type_person int null default 0;
   address text null;
   type_relationship int not null default 0;
   email text null;
@@ -117,6 +116,7 @@ create table public.item
   item_id text not null default gen_random_uuid (),
   owner_id text not null DEFAULT get_owner_id((auth.uid())::text),
   name text not null,
+  item_number text null,
   price_purchase float not null,
   price_selling float not null,
   item_type int not null default 0,
@@ -159,3 +159,45 @@ create table public.weather_place(
   created_at timestamp with time zone not null default now(),
   constraint weather_place_pkey primary key (id)
 ) TABLESPACE pg_default;
+
+
+create table public.issue_head(
+  issue_id text not null default gen_random_uuid (),
+  owner_id text not null DEFAULT get_owner_id((auth.uid())::text),
+  issue_number text not null,
+  date_of_issue date not null default now(),
+  company_id text null,
+  note text null,
+  place text null,
+  issue_price float not null default 0,
+  constraint issue_id_pkey primary key (issue_id)
+) TABLESPACE pg_default;
+
+ALTER TABLE public.issue_head ADD CONSTRAINT issue_head_company_fk FOREIGN KEY (company_id) REFERENCES public.company(company_id);
+CREATE INDEX idx_issue_head_company_id ON public.issue_head (company_id);
+
+ALTER TABLE issue_head ENABLE ROW LEVEL SECURITY;
+
+create policy "read own rows"
+on issue_head for select
+to authenticated
+using (owner_id = get_owner_id ());
+
+-- INSERT: smí vložit jen jako sám sebe
+create policy "insert as self"
+on issue_head for insert
+to authenticated
+with check (owner_id = get_owner_id ());
+
+-- UPDATE: může měnit jen své řádky
+create policy "update own rows"
+on issue_head for update
+to authenticated
+using (owner_id = get_owner_id ())
+with check (owner_id = get_owner_id ());
+
+-- DELETE: může mazat jen své řádky (pokud chceš)
+create policy "delete own rows"
+on issue_head for delete
+to authenticated
+using (owner_id = get_owner_id ());

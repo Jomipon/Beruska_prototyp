@@ -1,12 +1,13 @@
+"""
+Hlavní a zaváděcí program pro spuštění aplikace
+"""
+
 import os
 import streamlit as st
 from streamlit_cookies_manager import EncryptedCookieManager
 from supabase import create_client
 from dotenv import load_dotenv
-import pandas as pd
-import uuid
 from login import set_session_from_params, get_session_from_session_state, get_session_from_cookies, get_login_frame, get_loged_frame
-import time
 from pages.switch_panel import main_menu
 import pages.page_controller as pgs
 
@@ -20,17 +21,21 @@ APP_PASSWORD = os.getenv("APP_PASSWORD")
 APP_GOOGLE_API = os.getenv("APP_GOOGLE_API")
 
 pg = pgs.Page_controller()
-page_board     = pg.page_create("pages/board.py", "Board", "board")
+page_board         = pg.page_create("pages/board.py", "Board", "board")
 #Company
-page_companies = pg.page_create("pages/company/companies.py", "Seznam partnerů", "companies")
-page_company   = pg.page_create("pages/company/company.py", "Detail partnera", "company")
+page_companie      = pg.page_create("pages/company/companies.py", "Seznam partnerů", "companies")
+page_company       = pg.page_create("pages/company/company.py", "Detail partnera", "company")
 
 #assortment
-page_assortments = pg.page_create("pages/assortment/assortments.py", "Seznam sortimentů", "assortments")
-page_assortment = pg.page_create("pages/assortment/assortment.py", "Detail sortimentu", "assortment")
-
+page_assortments   = pg.page_create("pages/store/assortment/assortments.py", "Seznam sortimentů", "assortments")
+page_assortment    = pg.page_create("pages/store/assortment/assortment.py", "Detail sortimentu", "assortment")
+page_receipts      = pg.page_create("pages/store/receipt/receipts.py", "Seznam příjemek", "receipts")
+page_receipt       = pg.page_create("pages/store/receipt/receipt.py", "Příjemka", "receipt")
+page_issues        = pg.page_create("pages/store/issue/issues.py", "Seznam výdejek", "issues")
+page_issue         = pg.page_create("pages/store/issue/issue.py", "Výdejka", "issue")
 
 page_test      = pg.page_create("pages/page_test.py", "Test", "test")
+
 #Settings
 page_settings  = pg.page_create("pages/settings/settings.py", "Nastavení", "settings")
 
@@ -43,7 +48,6 @@ if not cookies.ready():
 database = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 st.session_state["sb_database"] = database
-
 st.session_state["app_base_url"] = APP_BASE_URL
 st.session_state["app_google_api"] = APP_GOOGLE_API
 
@@ -59,7 +63,7 @@ if session:
     col_picture, col_login = st.columns(2)
     with col_picture:
         with st.container(border=True):
-            st.image("pictures/lejsek_sedy_vetev_7.png", use_container_width=True)
+            st.image("pictures/lejsek_sedy_vetev_7.png", width="stretch")
     with col_login:
         with st.container(border=True):
             get_loged_frame(session, cookies)
@@ -67,7 +71,7 @@ else:
     col_picture, col_login = st.columns(2)
     with col_picture:
         with st.container(border=True):
-            st.image("pictures/lejsek_sedy_login.png", use_container_width=True)
+            st.image("pictures/lejsek_sedy_login.png", width="stretch")
             st.markdown("# L.E.J.S.E.K.")
     with col_login:
         with st.container(border=True):
@@ -87,4 +91,3 @@ if session:
     main_menu()
 
 pg.run()
-
