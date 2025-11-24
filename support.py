@@ -44,7 +44,6 @@ def download_post_url(url, post_data, headers):
     client.perform()
     status_code = client.getinfo(pycurl.RESPONSE_CODE)
     if status_code != 200:
-        st.write(f"{status_code=}")
         return ""
     client.close()
     body = buffer.getvalue()
@@ -235,7 +234,6 @@ def download_delete_url(url, headers):
     client.perform()
     status_code = client.getinfo(pycurl.RESPONSE_CODE)
     if status_code != 200:
-        st.write(f"{status_code=}")
         return ""
     client.close()
     body = buffer.getvalue()
