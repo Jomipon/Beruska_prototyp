@@ -190,7 +190,6 @@ def main():
                 try:
                     url = f"{fast_api_url_base}{fast_api_url_company_c}"
                     body = download_post_url(url, json.dumps(company_edited), [f"Authorization: Bearer {access_token_new}","Content-Type: application/json"])
-                    ins_responce = json.loads(body)
                     st.query_params.pop("new", None)
                     st.success("Vytvořeno")
                     st.toast("Partner byl vytvořen", icon="✅")

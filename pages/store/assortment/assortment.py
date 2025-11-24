@@ -177,7 +177,6 @@ def main():
                 try:
                     url = f"{fast_api_url_base}{fast_api_url_item_c}"
                     body = download_post_url(url, json.dumps(item_edited), [f"Authorization: Bearer {access_token_new}","Content-Type: application/json"])
-                    ins_responce = json.loads(body)
                     #database.from_("item").insert(insert_data).execute()
                     st.session_state.pop(f"item_orig_{id_item}")
                     st.query_params.pop("new", None)
