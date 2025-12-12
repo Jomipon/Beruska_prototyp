@@ -17,7 +17,7 @@ def load_settings(refresh_token):
 
         access_token_new = get_access_token(refresh_token)
         
-        body = call_create_owner_api(fast_api_url_base, access_token_new)
+        body = call_create_owner_api(access_token_new)
         
         url = f"{fast_api_url_base}{fast_api_url_settings}"
         body = download_get_url(url, [f"Authorization: Bearer {access_token_new}"])
@@ -109,7 +109,7 @@ def main():
     fast_api_url_settings = os.getenv("FAST_API_URL_SETTINGS")
     
     access_token_new = get_access_token(refresh_token)
-    call_create_owner_api(fast_api_url_base, access_token_new)
+    call_create_owner_api(access_token_new)
 
     settings = load_settings(refresh_token)
     if settings:

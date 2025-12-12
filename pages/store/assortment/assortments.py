@@ -16,7 +16,7 @@ def load_items(refresh_token):
 
         access_token_new = get_access_token(refresh_token)
         
-        body = call_create_owner_api(fast_api_url_base, access_token_new)
+        body = call_create_owner_api(access_token_new)
         
         url = f"{fast_api_url_base}{fast_api_url_items}"
         body = download_get_url(url, [f"Authorization: Bearer {access_token_new}"])

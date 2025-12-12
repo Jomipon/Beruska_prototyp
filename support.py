@@ -43,7 +43,7 @@ def download_post_url(url, post_data, headers):
         client.setopt(pycurl.HTTPHEADER, headers)
     client.perform()
     status_code = client.getinfo(pycurl.RESPONSE_CODE)
-    if status_code != 200:
+    if not str(status_code).startswith("20"):
         return ""
     client.close()
     body = buffer.getvalue()
@@ -245,11 +245,24 @@ def remove_diacriticism(name):
         name = name.replace(char_replace[0], char_replace[1])
     return name
 
-def call_create_owner_api(fast_api_url_base, access_token):
+def call_create_owner_api(access_token):
     """
-    zavolá create_owner_id propřípravu tabulek
+    zavolá create_owner_id pro přípravu tabulek
     """
-    url = f"{fast_api_url_base}/create_owner_id"
+    fast_api_url_base = os.getenv("FAST_API_URL_BASE")
+    fast_api_url_create_owner_id = os.getenv("FAST_API_URL_CREATE_OWNER_ID")
+    url = f"{fast_api_url_base}{fast_api_url_create_owner_id}"
+    body = download_get_url(url, [f"Authorization: Bearer {access_token}"])
+    body = body.decode('UTF-8')
+    return body
+
+def call_create_issue_from_pre(access_token, id_pre):
+    """
+    zavolá create_issue_from_pre pro překlopení z PRE do ISSUE
+    """
+    fast_api_url_base = os.getenv("FAST_API_URL_BASE")
+    fast_api_url_create_issue_from_pre = os.getenv("FAST_API_URL_CREATE_ISSUE_FROM_PRE")
+    url = f"{fast_api_url_base}{fast_api_url_create_issue_from_pre}".format(id_pre=id_pre)
     body = download_get_url(url, [f"Authorization: Bearer {access_token}"])
     body = body.decode('UTF-8')
     return body

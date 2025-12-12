@@ -40,7 +40,7 @@ def main():
     try:
         access_token_new = get_access_token(refresh_token)
         
-        call_create_owner_api(fast_api_url_base, access_token_new)
+        call_create_owner_api(access_token_new)
     except Exception:
         st.query_params.clear()
         st.stop()
@@ -203,13 +203,16 @@ def main():
                             ins_responce = json.loads(body)
                             st.session_state.pop(f"item_orig_{id_item}")
                             st.query_params.pop("new", None)
-                            st.success("Uloženo")
+                            st.session_state["show_item_updated"] = True
                             st.toast("Sortiment byl uložen", icon="✅")
                         except:
                             st.error("Nepovedlo se uložit data")
             with col2:
                 if st.button("Smazat"):
                     sortiment_smazat(database, id_item, item_edited["name"])
+        if "show_item_updated" in st.session_state and st.session_state["show_item_updated"]:
+            st.success("Uloženo")
+            st.session_state["show_item_updated"] = False
 
 if __name__ == "__main__":
     main()

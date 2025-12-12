@@ -32,6 +32,8 @@ def main():
 
     if session is None:
         session = database.auth.get_session()
+    if not session:
+        return
     fast_api_url_base = os.getenv("FAST_API_URL_BASE")
     fast_api_url_company_c = os.getenv("FAST_API_URL_COMPANY_C")
     fast_api_url_company_rud = os.getenv("FAST_API_URL_COMPANY_RUD")
@@ -43,7 +45,7 @@ def main():
     try:
         access_token_new = get_access_token(refresh_token)
         
-        call_create_owner_api(fast_api_url_base, access_token_new)
+        call_create_owner_api(access_token_new)
     except Exception:
         st.query_params.clear()
         st.stop()
@@ -207,7 +209,7 @@ def main():
                         body = download_put_url(url, json.dumps(company_edited), [f"Authorization: Bearer {access_token_new}"])
                         ins_responce = json.loads(body)
                         st.query_params.pop("new", None)
-                        st.success("Uloženo")
+                        st.session_state["show_company_updated"] = True
                         st.toast("Partner byl uložen", icon="✅")
                     except Exception as e:
                         st.error("Nepovedlo se uložit data")
@@ -216,6 +218,9 @@ def main():
                 if st.button("Smazat"):
                     company_name = f'{company_edited["name_first"]} {company_edited["name_last"]}' if company_edited["type_person"] == 0 else company_edited["name"]
                     partner_smazat(database, id_company, company_name)
+        if "show_company_updated" in st.session_state and st.session_state["show_company_updated"]:
+            st.success("Uloženo")
+            st.session_state["show_company_updated"] = False
 if __name__ == "__main__":
     main()
     

@@ -21,7 +21,7 @@ def load_companies(refresh_token):
 
         access_token_new = get_access_token(refresh_token)
         
-        body = call_create_owner_api(fast_api_url_base, access_token_new)
+        body = call_create_owner_api(access_token_new)
         
         url = f"{fast_api_url_base}{fast_api_url_companies}"
         body = download_get_url(url, [f"Authorization: Bearer {access_token_new}"])
@@ -62,21 +62,22 @@ def main():
         df = pd.DataFrame(companies)
         df = df.assign(url=df.company_id)
         df["url"] = df["url"].apply(lambda x: f"{st.session_state['app_base_url']}/company?id={x}")
-        df = df[["company_id", "name", "name_first", "name_last", "active", "note", "created_at", "url", "phone_number", "alias", "type_person"]]
-        df["name"] = np.where(df["type_person"] == 0, df["name_first"] + " " + df["name_last"], df["name"])
+        df = df[["company_id", "name_full", "name", "name_first", "name_last", "active", "note", "created_at", "url", "phone_number", "alias", "type_person"]]
+        df.sort_values("name_full", inplace=True)
         st.data_editor(
             data=df,
             hide_index=True,
-            disabled=["company_id", "name", "name_first", "name_last", "active", "note", "created_at", "url", "phone_number", "alias"],
+            disabled=["company_id", "name", "name_first", "name_last", "active", "note", "created_at", "url", "phone_number", "alias", "name_full"],
             column_config={
                 "url": st.column_config.LinkColumn("Odkaz", width=30, display_text="Detail"),
                 "name": st.column_config.TextColumn("Název partnera", width="medium"),
+                "name_full": st.column_config.TextColumn("Název partnera", width="medium"),
                 "active": st.column_config.CheckboxColumn("Aktivní", width=20),
                 "phone_number": st.column_config.TextColumn("Telefon", width="small"),
                 "note": st.column_config.TextColumn("Poznámka", width="small"),
                 "alias": st.column_config.TextColumn("Alias", width="small"),
             },
-            column_order=["name", "url", "note", "alias", "phone_number"],
+            column_order=["name_full", "url", "note", "alias", "phone_number"],
             width="stretch",
             key="companies_editor"
         )

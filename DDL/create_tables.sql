@@ -166,10 +166,11 @@ create table public.issue_head(
   owner_id text not null DEFAULT get_owner_id((auth.uid())::text),
   issue_number text not null,
   date_of_issue date not null default now(),
-  company_id text null,
+  company_id text null references company,
   note text null,
   place text null,
   issue_price float not null default 0,
+  created_at timestamp with time zone not null default now(),
   constraint issue_id_pkey primary key (issue_id)
 ) TABLESPACE pg_default;
 
@@ -201,3 +202,132 @@ create policy "delete own rows"
 on issue_head for delete
 to authenticated
 using (owner_id = get_owner_id ());
+
+
+create table public.issue_detail(
+  issue_detail_id text not null default gen_random_uuid (),
+  issue_id text not null references issue_head,
+  owner_id text not null DEFAULT get_owner_id((auth.uid())::text),
+  note text null,
+  item_id text null references item,
+  amoung float not null,
+  price_peice float not null,
+  price_row float not null,
+  created_at timestamp with time zone not null default now(),
+  constraint issue_detail_id_pkey primary key (issue_detail_id)
+) TABLESPACE pg_default;
+
+ALTER TABLE issue_detail ENABLE ROW LEVEL SECURITY;
+
+create policy "read own rows"
+on issue_detail for select
+to authenticated
+using (owner_id = get_owner_id ());
+
+-- INSERT: smí vložit jen jako sám sebe
+create policy "insert as self"
+on issue_detail for insert
+to authenticated
+with check (owner_id = get_owner_id ());
+
+-- UPDATE: může měnit jen své řádky
+create policy "update own rows"
+on issue_detail for update
+to authenticated
+using (owner_id = get_owner_id ())
+with check (owner_id = get_owner_id ());
+
+-- DELETE: může mazat jen své řádky (pokud chceš)
+create policy "delete own rows"
+on issue_detail for delete
+to authenticated
+using (owner_id = get_owner_id ());
+
+
+create table public.issue_head_pre(
+  pre_id text not null,
+  issue_id text not null default gen_random_uuid (),
+  owner_id text not null DEFAULT get_owner_id((auth.uid())::text),
+  issue_number text not null,
+  date_of_issue date not null default now(),
+  company_id text null,
+  note text null,
+  place text null,
+  issue_price float not null default 0,
+  created_at timestamp with time zone not null default now(),
+  constraint issue_pre_id_pkey primary key (pre_id)
+) TABLESPACE pg_default;
+
+ALTER TABLE issue_head_pre ENABLE ROW LEVEL SECURITY;
+
+create policy "read own rows"
+on issue_head_pre for select
+to authenticated
+using (owner_id = get_owner_id ());
+
+-- INSERT: smí vložit jen jako sám sebe
+create policy "insert as self"
+on issue_head_pre for insert
+to authenticated
+with check (owner_id = get_owner_id ());
+
+-- UPDATE: může měnit jen své řádky
+create policy "update own rows"
+on issue_head_pre for update
+to authenticated
+using (owner_id = get_owner_id ())
+with check (owner_id = get_owner_id ());
+
+-- DELETE: může mazat jen své řádky (pokud chceš)
+create policy "delete own rows"
+on issue_head_pre for delete
+to authenticated
+using (owner_id = get_owner_id ());
+
+
+
+create table public.issue_detail_pre(
+  pre_id text not null,
+  issue_detail_id text not null default gen_random_uuid (),
+  issue_id text not null,
+  owner_id text not null DEFAULT get_owner_id((auth.uid())::text),
+  note text null,
+  item_id text null,
+  amoung float not null,
+  price_peice float not null,
+  price_row float not null,
+  created_at timestamp with time zone not null default now(),
+  constraint issue_detail_pre_id_pkey primary key (pre_id)
+) TABLESPACE pg_default;
+
+ALTER TABLE issue_detail_pre ENABLE ROW LEVEL SECURITY;
+
+create policy "read own rows"
+on issue_detail_pre for select
+to authenticated
+using (owner_id = get_owner_id ());
+
+-- INSERT: smí vložit jen jako sám sebe
+create policy "insert as self"
+on issue_detail_pre for insert
+to authenticated
+with check (owner_id = get_owner_id ());
+
+-- UPDATE: může měnit jen své řádky
+create policy "update own rows"
+on issue_detail_pre for update
+to authenticated
+using (owner_id = get_owner_id ())
+with check (owner_id = get_owner_id ());
+
+-- DELETE: může mazat jen své řádky (pokud chceš)
+create policy "delete own rows"
+on issue_detail_pre for delete
+to authenticated
+using (owner_id = get_owner_id ());
+
+
+CREATE OR REPLACE VIEW public.company_fullname
+AS 
+  select *, case when type_person = 1 then name else (name_first||' '||name_last) end as full_name from company
+ALTER VIEW company_fullname SET (security_invoker = on);
